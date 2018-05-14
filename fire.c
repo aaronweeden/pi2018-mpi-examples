@@ -23,6 +23,7 @@
    CamelCase for globals and functions
    lowerCase for locals
    */
+#include <omp.h> /* omp_get_wtime() */
 #include <mpi.h> /* MPI_Init(), MPI_Finalize(), etc. */
 #include <stdbool.h> /* bool type */
 #include <stdio.h> /* printf() */
@@ -690,6 +691,9 @@ void FreeMemory() {
 int main(int argc, char **argv) {
   int i;
 
+  /* Start the timer */
+  double startTime = omp_get_wtime();
+
   /* Initialize MPI */
   MPI_Init(&argc, &argv);
 
@@ -806,6 +810,12 @@ int main(int argc, char **argv) {
 
   /* Free allocated memory */
   FreeMemory();
+
+  /* Stop the timer, print the total elapsed time */
+  if (MyRank == BOSS) {
+    printf("Runtime: %f seconds\n",
+      omp_get_wtime() - startTime);
+  }
 
   /* Clean up MPI */
   MPI_Finalize();
