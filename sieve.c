@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   double startTime = omp_get_wtime(); // Start the timer
   bool is_printing = false; // Decide whether to print the primes
   int split; // A near-as-possible even split of the count of numbers above 
-                 // sqrtN
+             // sqrtN
   int remainder; // The remainder of the near-as-possible even split
   int low; // The lowest number in the current process' split
   int high; // The highest number in the current process' split
@@ -53,10 +53,10 @@ int main(int argc, char **argv)
                         // at the end
   int *their_list2; // List of numbers received by another process at the
                     // end 
-
+  
   // Initialize the MPI Environment
   MPI_Init(&argc, &argv);
-
+  
   // Determine the rank of the current process and the number of processes
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
@@ -80,121 +80,121 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
   }
-
+  
   // Calculate size of list1
   sqrtN = (int)sqrt(N);
   list1_size = sqrtN + 1;
-
+  
   // Divvy up list2
   list2_size = N - list1_size;
   split = list2_size / num_procs;
   remainder = list2_size % num_procs;
   low = list1_size + my_rank * split;
   high = low + split - 1;
-  if(my_rank == num_procs - 1) {
+  if(my_rank == num_procs - 1)
+  {
     high += remainder;
   }
   my_list2_size = high - low + 1;
   max_list2_size = split + remainder;
-
-  /* Allocate memory for lists */
+  
+  // Allocate memory for lists
   list1 = (int*)malloc(list1_size * sizeof(int));
   my_list2 = (int*)malloc(my_list2_size * sizeof(int));
-  if(my_rank == 0) {
+  if(my_rank == 0)
+  {
     their_list2 = (int*)malloc(max_list2_size * sizeof(int));
   }
-
-  /* Exit if malloc failed */
-  if(list1 == NULL) {
+  
+  // Exit if malloc failed
+  if(list1 == NULL)
+  {
     fprintf(stderr, "Error: Failed to allocate memory for list1.\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
-  if(my_list2 == NULL) {
+  if(my_list2 == NULL)
+  {
     fprintf(stderr, "Error: Failed to allocate memory for my_list2.\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
-  if(my_rank == 0 && their_list2 == NULL) {
+  if(my_rank == 0 && their_list2 == NULL)
+  {
     fprintf(stderr, "Error: Failed to allocate memory for their_list2.\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
-
-  /* Run through each number in list1 */
-  for(c = 2; c <= sqrtN; c++) {
-
-    /* Set each number as unmarked */
+  // Run through each number in list1
+  for(c = 2; c <= sqrtN; c++)
+  {
+    // Set each number as unmarked
     list1[c] = 0;
   }
-  
-  /* Run through each number in my_list2 */
-  for(c = low; c <= high; c++) {
-
-    /* Set each number as unmarked */
+  // Run through each number in my_list2
+  for(c = low; c <= high; c++)
+  {
+    // Set each number as unmarked
     my_list2[c - low] = 0;
   }
-
-  /* Run through each number in list1 */
-  for(c = 2; c <= sqrtN; c++) {
-
-    /* If the number is unmarked */
-    if(list1[c] == 0) {
-
-      /* Run through each number bigger than c in list1 */
-      for(m = c+1; m <= sqrtN; m++) {
-
-        /* If m is a multiple of c */
-        if(m % c == 0) {
-
-          /* Mark m */
+  // Run through each number in list1
+  for(c = 2; c <= sqrtN; c++)
+  {
+    // If the number is unmarked
+    if(list1[c] == 0)
+    {
+      // Run through each number bigger than c in list1
+      for(m = c+1; m <= sqrtN; m++)
+      {
+        // If m is a multiple of c
+        if(m % c == 0)
+        {
+          // Mark m
           list1[m] = 1;
         }
       }
-
-      /* Run through each number bigger than c in my_list2 */
+      // Run through each number bigger than c in my_list2
       for(m = low; m <= high; m++)
       {
-        /* If m is a multiple of c */
+        // If m is a multiple of c
         if(m % c == 0)
         {
-          /* Mark m */
+          // Mark m
           my_list2[m - low] = 1;
         }
       }
     }
   }
-
-  /* If Rank 0 is the current process */
-  if(my_rank == 0) {
-
-    /* Run through each of the numbers in list1 */
-    for(c = 2; c <= sqrtN; c++) {
-
-      /* If the number is unmarked */
-      if(list1[c] == 0) {
-
-        /* The number is prime; print it */
-        if(is_printing) {
+  // If Rank 0 is the current process
+  if(my_rank == 0)
+  {
+    // Run through each of the numbers in list1
+    for(c = 2; c <= sqrtN; c++)
+    {
+      // If the number is unmarked
+      if(list1[c] == 0)
+      {
+        // The number is prime; print it
+        if(is_printing)
+        {
           printf("%d ", c);
         }
       }
     }
-
-    /* Run through each of the numbers in my_list2 */
-    for(c = low; c <= high; c++) {
-
-      /* If the number is unmarked */
-      if(my_list2[c - low] == 0) {
-
-        /* The number is prime; print it */
-        if(is_printing) {
+    // Run through each of the numbers in my_list2
+    for(c = low; c <= high; c++)
+    {
+      // If the number is unmarked
+      if(my_list2[c - low] == 0)
+      {
+        // The number is prime; print it
+        if(is_printing)
+        {
           printf("%d ", c);
         }
       }
     }
-
-    /* Run through each of the other processes */
-    for(their_rank = 1; their_rank < num_procs; their_rank++) {
-      
-      /* Receive data from the process about their_list2 */
+    // Run through each of the other processes
+    for(their_rank = 1; their_rank < num_procs; their_rank++)
+    {
+      // Receive data from the process about their_list2
       MPI_Recv(&their_low, 1, MPI_INT, their_rank, 0,
                MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(&their_high, 1, MPI_INT, their_rank, 1,
@@ -203,46 +203,49 @@ int main(int argc, char **argv)
                MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(their_list2, their_list2_size, MPI_INT, their_rank, 3,
                MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-      /* Run through the list2 that was just received */
-      for(c = their_low; c <= their_high; c++) {
-
-        /* If the number is unmarked */
-        if(their_list2[c - their_low] == 0) {
-
-          /* The number is prime, print it */
-          if(is_printing) {
+      
+      // Run through the list2 that was just received
+      for(c = their_low; c <= their_high; c++)
+      {
+        // If the number is unmarked
+        if(their_list2[c - their_low] == 0)
+        {
+          // The number is prime, print it
+          if(is_printing)
+          {
             printf("%d ", c);
           }
         }
       }
     }
-    if(is_printing) {
+    if(is_printing)
+    {
       printf("\n");
     }
-
-    /* If the process is not Rank 0 */
-  } else {
-
-    /* Send data to Rank 0 about my_list2 */
+  }
+  // If the process is not Rank 0
+  else
+  {
+    // Send data to Rank 0 about my_list2
     MPI_Send(&low, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     MPI_Send(&high, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
     MPI_Send(&my_list2_size, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
     MPI_Send(my_list2, my_list2_size, MPI_INT, 0, 3, MPI_COMM_WORLD);
   }
-
-  /* Deallocate memory for lists */
-  if(my_rank == 0) {
+  // Deallocate memory for lists
+  if(my_rank == 0)
+  {
     free(their_list2);
   }
   free(my_list2);
   free(list1);
-
-  /* Finalize the MPI environment */
+  
+  // Finalize the MPI environment
   MPI_Finalize();
-
+  
   // Print the runtime
-  if(my_rank == 0) {
+  if(my_rank == 0)
+  {
     printf("Runtime: %f seconds\n", omp_get_wtime() - startTime); 
   }
 
