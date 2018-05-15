@@ -6,4 +6,4 @@
 
 cd $PBS_O_WORKDIR
 
-aprun -n 1 ./sieve.exe -n 5000000
+aprun -n 64 -N 32 ./sieve.exe -n 5000000
