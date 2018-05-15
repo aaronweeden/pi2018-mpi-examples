@@ -178,7 +178,7 @@ void PrintError(const char *errorMsg) {
 }
 
 /* Display to the user what options are available for running the program and
-   exit the program in failure 
+   exit the program in failure
 
    @param errorMsg The error message to print
    */
@@ -547,8 +547,8 @@ void OutputData() {
 
 /* Return whether a given tree has burnt out
 
-   @param row The row index of the tree 
-   @param col The column index of the tree 
+   @param row The row index of the tree
+   @param col The column index of the tree
    @return Whether the tree in the given row and column has burnt out
    */
 bool IsBurntOut(const int row, const int col) {
@@ -557,8 +557,8 @@ bool IsBurntOut(const int row, const int col) {
 
 /* Return whether a given tree is on fire
 
-   @param row The row index of the tree 
-   @param col The column index of the tree 
+   @param row The row index of the tree
+   @param col The column index of the tree
    @return Whether the tree in the given row and column is on fire
    */
 bool IsOnFire(const int row, const int col) {
@@ -567,7 +567,7 @@ bool IsOnFire(const int row, const int col) {
 }
 
 /* For trees already burning, increment the number of time steps they have
-   burned 
+   burned
    */
 void ContinueBurning() {
   int row;
