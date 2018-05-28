@@ -744,14 +744,14 @@ int main(int argc, char **argv) {
 
   /* Do some calculations before splitting up the rows */
   NTrees = NRows * NCols;
-  NRowsPlusBounds = NRows + 2;
   NColsPlusBounds = NCols + 2;
-  NTreesPlusBounds = NRowsPlusBounds * NColsPlusBounds;
   MiddleRow = NRows / 2;
   MiddleCol = NCols / 2;
 
   /* Calculate the number of rows for which each process is responsible */
   DistributeRows();
+  NRowsPlusBounds = NRows + 2;
+  NTreesPlusBounds = NRowsPlusBounds * NColsPlusBounds;
 
   /* Allocate dynamic memory for the 1D tree arrays */
   AllocateMemory();
